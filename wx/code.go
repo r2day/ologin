@@ -2,17 +2,18 @@ package wx
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/open4go/log"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
 
 // GetWxaCodeUnLimit 获取不受限制的小程序码
 // https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/qrcode-link/qr-code/getUnlimitedQRCode.html
-func GetWxaCodeUnLimit(accessToken string, scene string, page string, envVer string) ([]byte, error) {
+func GetWxaCodeUnLimit(ctx context.Context, accessToken string, scene string, page string, envVer string) ([]byte, error) {
 	urlStr := fmt.Sprintf(getwxacodeunlimitUrl, accessToken)
 
 	reqParam := &GetWxaCodeUnLimitParam{
@@ -37,14 +38,14 @@ func GetWxaCodeUnLimit(accessToken string, scene string, page string, envVer str
 	//// 创建一个新文件，用于存储下载的图片
 	outFile, err := os.Create("output.jpg")
 	if err != nil {
-		log.Fatal("Error creating file: ", err)
+		log.Log(ctx).Fatal("Error creating file: ", err)
 	}
 	defer outFile.Close()
 
 	// 将二进制流写入新文件
 	_, err = io.Copy(outFile, wxResp.Body)
 	if err != nil {
-		log.Fatal("Error writing file: ", err)
+		log.Log(ctx).Fatal("Error writing file: ", err)
 	}
 
 	return []byte(""), nil

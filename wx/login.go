@@ -1,6 +1,7 @@
 package wx
 
 import (
+	"context"
 	"github.com/open4go/util9s"
 )
 
@@ -20,13 +21,13 @@ type LoginResp struct {
 }
 
 // GetSession 获取微信登陆返回
-func GetSession(code string, secretKey string, appId string) (*LoginResp, error) {
+func GetSession(ctx context.Context, code string, secretKey string, appId string) (*LoginResp, error) {
 	// 拼接请求地址
 	url := wxLoginEndpoint + appId + "&secret=" +
 		secretKey + "&js_code=" +
 		code + "&grant_type=" + grantType
 	resp := &LoginResp{}
-	err := util9s.Get(url, resp)
+	err := util9s.Get(ctx, url, resp)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ import (
 
 // getWxaAccessToken 获取微信小程序的AccessToken
 // https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/mp-access-token/getAccessToken.html
-func getWxaAccessToken(appId, appSecret string) (*GetWxaAccessTokenResp, error) {
+func getWxaAccessToken(ctx context.Context, appId, appSecret string) (*GetWxaAccessTokenResp, error) {
 	urlStr := fmt.Sprintf(getWxaAccessTokenUrl, appId, appSecret)
 	wxResp, err := http.Get(urlStr)
 	if err != nil {
@@ -23,7 +23,7 @@ func getWxaAccessToken(appId, appSecret string) (*GetWxaAccessTokenResp, error) 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Log().Error(err)
+			log.Log(ctx).Error(err)
 		}
 	}(wxResp.Body)
 
@@ -45,12 +45,12 @@ func getWxaAccessToken(appId, appSecret string) (*GetWxaAccessTokenResp, error) 
 }
 
 // GetWxaAccessToken 获取小程序AccessToken
-func GetWxaAccessToken(appId, appSecret string) (*GetWxaAccessTokenResp, error) {
+func GetWxaAccessToken(ctx context.Context, appId, appSecret string) (*GetWxaAccessTokenResp, error) {
 	// 缓存的token无效的话，则重新发起请求
 	for i := 0; i < 3; i++ {
-		resp, err := getWxaAccessToken(appId, appSecret)
+		resp, err := getWxaAccessToken(ctx, appId, appSecret)
 		if err != nil {
-			log.Log().Errorf("GetWxaAccessToken, err=%v", err)
+			log.Log(ctx).Errorf("GetWxaAccessToken, err=%v", err)
 			continue
 		}
 		return resp, nil
@@ -67,7 +67,7 @@ func GetWxaAccessTokenWithCache(ctx context.Context, appId, appSecret string) (s
 	}
 
 	// 缓存中没有，则重新获取
-	resp, err := GetWxaAccessToken(appId, appSecret)
+	resp, err := GetWxaAccessToken(ctx, appId, appSecret)
 	if err != nil {
 		return "", err
 	}
