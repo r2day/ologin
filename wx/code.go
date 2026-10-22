@@ -27,7 +27,7 @@ func GetWxaCodeUnLimit(ctx context.Context, accessToken string, scene string, pa
 	if err != nil {
 		return nil, err
 	}
-	defer wxResp.Body.Close()
+	defer func() { _ = wxResp.Body.Close() }()
 
 	//wxRespByte, err := ioutil.ReadAll(wxResp.Body)
 	//
@@ -40,7 +40,7 @@ func GetWxaCodeUnLimit(ctx context.Context, accessToken string, scene string, pa
 	if err != nil {
 		log.Log(ctx).Fatal("Error creating file: ", err)
 	}
-	defer outFile.Close()
+	defer func() { _ = outFile.Close() }()
 
 	// 将二进制流写入新文件
 	_, err = io.Copy(outFile, wxResp.Body)

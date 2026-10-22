@@ -7,7 +7,6 @@ import (
 	"github.com/open4go/log"
 	"github.com/r2day/db"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -27,7 +26,7 @@ func getWxaAccessToken(ctx context.Context, appId, appSecret string) (*GetWxaAcc
 		}
 	}(wxResp.Body)
 
-	b, err := ioutil.ReadAll(wxResp.Body)
+	b, err := io.ReadAll(wxResp.Body)
 	if err != nil {
 		return nil, err
 	}
